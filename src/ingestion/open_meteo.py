@@ -1,17 +1,10 @@
 import requests
-from typing import Any, Dict, Optional
-from datetime import datetime
+from typing import Any, Dict
 
 
 class OpenMeteoClient:
     """
     Client for Open-Meteo API (forecast and archive endpoints).
-
-    Designed for:
-    - Parameterized ingestion
-    - Retry handling
-    - Timeout protection
-    - Clean separation of concerns
     """
 
     BASE_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -19,10 +12,11 @@ class OpenMeteoClient:
     DEFAULT_LATITUDE = 4.624335
     DEFAULT_LONGITUDE = -74.063644
     TIME_ZONE = 'America/Bogota'
-    VARIABLES = ["temperature_2m_max", "temperature_2m_min", "relative_humidity_2m", "precipitation", "precipitation_sum"]
+    VARIABLES = ["temperature_2m_max", "temperature_2m_min",
+                 "relative_humidity_2m", "precipitation", "precipitation_sum"]
 
-
-    def __init__(self, timeout: int = 30, max_retries: int = 3, backoff_factor: float = 1.5) -> None:
+    def __init__(self, timeout: int = 30, max_retries: int = 3,
+                 backoff_factor: float = 1.5) -> None:
         self.timeout = timeout
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
@@ -54,24 +48,22 @@ class OpenMeteoClient:
     def fetch_archive(self, **kwargs: Any):
         """
         Fetch historical weather data.
-
-        Required kwargs:
+        :param kwargs: API parameters,required:
             latitude (float)
             longitude (float)
             start_date (YYYY-MM-DD)
             end_date (YYYY-MM-DD)
-
-        Optional kwargs:
+        Optional:
             daily (comma-separated str)
             timezone (str)
         """
+
         if "latitude" not in kwargs:
             kwargs["latitude"] = self.DEFAULT_LATITUDE
         if "longitude" not in kwargs:
             kwargs["longitude"] = self.DEFAULT_LONGITUDE
         if "timezone" not in kwargs:
             kwargs["timezone"] = self.TIME_ZONE
-
 
         required = ["latitude", "longitude", "start_date", "end_date"]
         for key in required:
@@ -83,16 +75,15 @@ class OpenMeteoClient:
     def fetch_forecast(self, **kwargs: Any):
         """
         Fetch forecast weather data.
-
-        Required kwargs:
+        :param kwargs: API parameters,required:
             latitude (float)
             longitude (float)
-
-        Optional kwargs:
+        Optional:
             hourly (comma-separated str)
             daily (comma-separated str)
             timezone (str)
         """
+
         if "latitude" not in kwargs:
             kwargs["latitude"] = self.DEFAULT_LATITUDE
         if "longitude" not in kwargs:
