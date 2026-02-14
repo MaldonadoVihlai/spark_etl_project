@@ -4,6 +4,8 @@ from ingestion.open_meteo import OpenMeteoClient
 from raw.json_saver import save_raw_json
 from processing.open_meteo_json_parser import (create_fact_weather_daily,
                                                create_fact_weather_hourly)
+from aggregation.open_meteo_gold import (create_gold_weather_climate_trends,
+                                         create_gold_weather_hourly_patterns)
 from datetime import date
 
 
@@ -41,11 +43,20 @@ def main(config_path: str):
 
     raw_path = f'{config["storage"]["raw_path"]}/'
     silver_path = f'{config["storage"]["silver_path"]}'
+    gold_path = f'{config["storage"]["gold_path"]}'
 
     create_fact_weather_daily(spark, bronze_path=raw_path,
                               silver_path=silver_path)
     create_fact_weather_hourly(spark, bronze_path=raw_path,
                                silver_path=silver_path)
+
+    create_gold_weather_climate_trends(spark,
+                                       silver_path+'/fact_weather_daily',
+                                       gold_path)
+    create_gold_weather_hourly_patterns(spark,
+                                        silver_path+'/fact_weather_hourly',
+                                        silver_path+'/dim_datetime',
+                                        gold_path)
 
 
 if __name__ == "__main__":

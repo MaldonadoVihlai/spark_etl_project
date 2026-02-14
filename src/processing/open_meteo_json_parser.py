@@ -75,9 +75,7 @@ def create_fact_weather_daily(spark: SparkSession, bronze_path: str,
     # dim_location
     dim_location = (
         df_daily
-        .withColumn("location_id", monotonically_increasing_id())
         .select(
-            "location_id",
             "latitude",
             "longitude",
             "timezone",
@@ -86,6 +84,7 @@ def create_fact_weather_daily(spark: SparkSession, bronze_path: str,
             "elevation"
         )
         .distinct()
+        .withColumn("location_id", monotonically_increasing_id())
     )
 
     dim_location.write.mode("overwrite").parquet(
@@ -101,7 +100,7 @@ def create_fact_weather_daily(spark: SparkSession, bronze_path: str,
         .withColumn("year", year("date"))
         .withColumn("month", month("date"))
         .withColumn("day", dayofmonth("date"))
-        .withColumn("day_of_week", dayofweek("date"))        
+        .withColumn("day_of_week", dayofweek("date"))
     )
 
     dim_date.write.mode("overwrite").parquet(
@@ -114,7 +113,7 @@ def create_fact_weather_daily(spark: SparkSession, bronze_path: str,
         df_daily
         .join(
             dim_location,
-            ["latitude", "longitude", "timezone", "timezone_abbreviation", 
+            ["latitude", "longitude", "timezone", "timezone_abbreviation",
              "utc_offset_seconds", "elevation"],
             "left"
         )
@@ -178,7 +177,7 @@ def create_fact_weather_hourly(spark: SparkSession, bronze_path: str,
                 "hourly.temperature_2m",
                 "hourly.relative_humidity_2m",
                 "hourly.dew_point_2m",
-                "hourly.apparent_temperature"        
+                "hourly.apparent_temperature"
             )
         ).alias("hourly")
     )
@@ -240,7 +239,7 @@ def create_fact_weather_hourly(spark: SparkSession, bronze_path: str,
         df_hourly
         .join(
             dim_location,
-            ["latitude", "longitude", "timezone", "timezone_abbreviation", 
+            ["latitude", "longitude", "timezone", "timezone_abbreviation",
              "utc_offset_seconds", "elevation"],
             "left"
         )
