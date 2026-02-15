@@ -1,0 +1,16 @@
+dataset: demo_r_pjanind3
+base_url: https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow
+format: SDMX_3.0_STRUCTURED
+
+filters:
+  geo: [ES, FR, DE]
+  freq: ["A"]
+  time: ["2020", "2021", "2022", "2023", "2024", "2025"]
+  unit: [YR]
+  indic_de: ["FMEDAGEPOP", "MEDAGEPOP", "MMEDAGEPOP"]
+
+storage:
+  raw_path: data/raw/eurostat/
+  silver_path: data/silver/eurostat/
+  gold_path: data/gold/eurostat/
+
