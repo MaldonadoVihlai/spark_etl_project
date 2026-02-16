@@ -3,6 +3,7 @@ from common.config_loader import load_config
 from ingestion.eurostat_api import EurostatFilterClient
 from processing.eurostat_xml_parser import (parse_eurostat_series,
                                             write_eurostat_data)
+from aggregation.eurostat_gold import create_gold_demographics_indicators
 
 
 def main(config_path: str):
@@ -16,6 +17,7 @@ def main(config_path: str):
     freq_data = config["filters"]["freq"]
     raw_path = f'{config["storage"]["raw_path"]}'
     silver_path = f'{config["storage"]["silver_path"]}'
+    gold_path = f'{config["storage"]["gold_path"]}'
 
     client = EurostatFilterClient("demo_r_pjanind3", base_url, raw_path)
 
@@ -30,6 +32,10 @@ def main(config_path: str):
     print(xml_path)
     data_df = parse_eurostat_series(spark, raw_path)
     write_eurostat_data(spark, data_df, silver_path+'/population_structure')
+
+    create_gold_demographics_indicators(spark, silver_path
+                                        + '/population_structure',
+                                        gold_path)
 
 
 if __name__ == "__main__":
