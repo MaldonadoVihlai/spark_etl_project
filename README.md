@@ -30,7 +30,7 @@ configs/ \
 data/ \
 ├── raw/ (Bronze layer)\
 ├── silver/ \
-└── gold/ \
+└── gold/ 
 
 
 ---
@@ -44,7 +44,7 @@ data/ \
 3. **Raw persistence (Bronze)**
    - Original XML and JSON data is stored without transformation.
 4. **Parsing & normalization (Silver)**
-   - XML is parsed using PySpark (`spark-xml`).
+   - XML and JSON parsing logic.
    - Schemas are applied and types normalized.
 5. **Transformations & aggregations (Gold)**
    - Data is aggregated and prepared for analytics use cases.
@@ -76,6 +76,9 @@ Designed to run:
 | `dim_datetime` | 1 row per timestamp (hour) |
 
 ---
+<details>
+
+### Fact and Dimension details
 
 ### Fact Tables
 
@@ -236,6 +239,37 @@ Purpose:
 - Operational forecasting insights
 
 ---
+</details>
+
+### Eurostat data
+### Grain Definitions
+
+| Table | Grain |
+|-------|-------|
+| `gold_demographics_indicators` | 1 row per Country (geo) + Year |
+
+## Schema
+
+| Column | Type | Description |
+|-------|------|------------|
+| geo | STRING | Country code (Eurostat geographic identifier) |
+| year | INT | Reference year |
+| median_age_total | DOUBLE | Median age of total population |
+| median_age_male | DOUBLE | Median age of male population |
+| median_age_female | DOUBLE | Median age of female population |
+| dependency_ratio | DOUBLE | Age dependency ratio |
+
+---
+
+## Indicator Mapping
+
+| Eurostat Code | Column Name |
+|--------------|------------|
+| MEDAGEPOP | median_age_total |
+| MMEDAGEPOP | median_age_male |
+| FMEDAGEPOP | median_age_female |
+| DEPRATIO1 | dependency_ratio |
+
 
 ## How to Run it
 
@@ -263,10 +297,14 @@ pip install -e .
 4. To Run the project you can run the jobs files (open_meteo_json_parser):
 ``` bash
 python -m src.jobs.ingest_open_meteo configs/data_ingestion_open_meteo.yaml
+
+python -m src.jobs.ingest_eurostat configs/eurostat_demo_r_pjanind3.yaml
 ```
 
 5. If using Spark directly:
 
 ``` bash
 spark-submit --master local[*] src/jobs/ingest_open_meteo.py configs/data_ingestion_open_meteo.yaml
+
+spark-submit --master local[*] src.jobs.ingest_eurostat configs/eurostat_demo_r_pjanind3.yaml
 ```
